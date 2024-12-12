@@ -18,7 +18,7 @@ public:
     bool game_is_over();
 
 private:
-    int count_threes(T symbol);
+    bool is_adjacent(int x1, int y1, int x2, int y2);
 };
 
 template <typename T>
@@ -29,10 +29,10 @@ public:
 };
 
 template <typename T>
-class X_O_Random_Player : public RandomPlayer<T> {
+class X_O_Game_Random_Player : public RandomPlayer<T> {
 public:
-    X_O_Random_Player(T symbol);
-    void getmove(int& x, int& y) override;
+    X_O_Game_Random_Player(T symbol);
+    void getmove(int& x, int& y);
 };
 
 // Board constructor
@@ -48,12 +48,8 @@ X_O_Board<T>::X_O_Board() {
     }
     this->board[0][0] = 'O';
     this->board[0][1] = 'X';
-    this->board[0][2] = 'O';
-    this->board[0][3] = 'X';
-    this->board[3][0] = 'X';
-    this->board[3][1] = 'O';
-    this->board[3][2] = 'X';
-    this->board[3][3] = 'O';
+    this->board[3][2] = 'O';
+    this->board[3][3] = 'X';
     this->n_moves = 0;
 }
 
@@ -61,9 +57,16 @@ X_O_Board<T>::X_O_Board() {
 template <typename T>
 bool X_O_Board<T>::update_board(int x, int y, T mark) {
     if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
-        this->board[x][y] = mark;
-        this->n_moves++;
-        return true;
+        for (int i = 0; i < this->rows; i++) {
+            for (int j = 0; j < this->columns; j++) {
+                if (this->board[i][j] == mark && is_adjacent(i, j, x, y)) {
+                    this->board[i][j] = 0;  // Remove the token from the old position
+                    this->board[x][y] = mark;  // Place the token in the new position
+                    this->n_moves++;
+                    return true;
+                }
+            }
+        }
     }
     return false;
 }
@@ -82,78 +85,42 @@ void X_O_Board<T>::display_board() {
     cout << endl;
 }
 
-// Count aligned tokens
+// Check if the move is to an adjacent position
 template <typename T>
-int X_O_Board<T>::count_threes(T symbol) {
-    int count = 0;
-
-    // Check rows
-    for (int i = 0; i < this->rows; i++) {
-        for (int j = 0; j <= this->columns - 3; j++) {
-            if (this->board[i][j] == symbol && this->board[i][j + 1] == symbol && this->board[i][j + 2] == symbol) {
-                count++;
-            }
-        }
-    }
-
-    // Check columns
-    for (int j = 0; j < this->columns; j++) {
-        for (int i = 0; i <= this->rows - 3; i++) {
-            if (this->board[i][j] == symbol && this->board[i + 1][j] == symbol && this->board[i + 2][j] == symbol) {
-                count++;
-            }
-        }
-    }
-
-    // Check diagonals (top-left to bottom-right)
-    for (int i = 0; i <= this->rows - 3; i++) {
-        for (int j = 0; j <= this->columns - 3; j++) {
-            if (this->board[i][j] == symbol && this->board[i + 1][j + 1] == symbol && this->board[i + 2][j + 2] == symbol) {
-                count++;
-            }
-        }
-    }
-
-    // Check diagonals (top-right to bottom-left)
-    for (int i = 0; i <= this->rows - 3; i++) {
-        for (int j = 2; j < this->columns; j++) {
-            if (this->board[i][j] == symbol && this->board[i + 1][j - 1] == symbol && this->board[i + 2][j - 2] == symbol) {
-                count++;
-            }
-        }
-    }
-
-    return count;
+bool X_O_Board<T>::is_adjacent(int x1, int y1, int x2, int y2) {
+    return (abs(x1 - x2) + abs(y1 - y2)) == 1;
 }
 
 // Check win condition
 template <typename T>
 bool X_O_Board<T>::is_win() {
-    int x_score = count_threes('X');
-    int o_score = count_threes('O');
-    if (x_score > 0) {
-        cout << "Player X wins!\n";
-        return true;
-    } else if (o_score > 0) {
-        cout << "Player O wins!\n";
-        return true;
+    for (int i = 0; i < this->rows; i++) {
+        for (int j = 0; j < this->columns; j++) {
+            T symbol = this->board[i][j];
+            if (symbol != 0) {
+                if ((j <= this->columns - 3 && this->board[i][j + 1] == symbol && this->board[i][j + 2] == symbol) ||
+                    (i <= this->rows - 3 && this->board[i + 1][j] == symbol && this->board[i + 2][j] == symbol) ||
+                    (i <= this->rows - 3 && j <= this->columns - 3 && this->board[i + 1][j + 1] == symbol && this->board[i + 2][j + 2] == symbol) ||
+                    (i >= 2 && j <= this->columns - 3 && this->board[i - 1][j + 1] == symbol && this->board[i - 2][j + 2] == symbol)) {
+                    cout << "Player " << symbol << " wins!\n";
+                    return true;
+                }
+            }
+        }
     }
     return false;
 }
+
+// Check draw condition
 template <typename T>
 bool X_O_Board<T>::is_draw() {
-    int xscore = count_threes('X');
-    int oscore = count_threes('O');
-    return (oscore == xscore && this->n_moves == 16);
+    return (this->n_moves >= 16);
 }
+
 // Check if the game is over
 template <typename T>
 bool X_O_Board<T>::game_is_over() {
-    if (is_win() || this->n_moves >= 16) {
-        cout << "Game over!\n";
-        return true;
-    }
-    return false;
+    return is_win() || is_draw();
 }
 
 // Human player constructor
@@ -169,15 +136,11 @@ void X_O_Human_Player<T>::getmove(int& x, int& y) {
 
 // Random computer player constructor
 template <typename T>
-X_O_Random_Player<T>::X_O_Random_Player(T symbol) : RandomPlayer<T>(symbol) {
-    this->dimension = 4;
-    this->name = "Random Computer Player";
-    srand(static_cast<unsigned int>(time(0)));  // Seed the random number generator
-}
+X_O_Game_Random_Player<T>::X_O_Game_Random_Player(T symbol) : RandomPlayer<T>(symbol) {}
 
 // Get move from random player
 template <typename T>
-void X_O_Random_Player<T>::getmove(int& x, int& y) {
+void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;
     y = rand() % this->dimension;
 }
