@@ -16,9 +16,14 @@ public:
     bool is_win();
     bool is_draw();
     bool game_is_over();
+    T get_cell(int x, int y) const {
+        return this->board[x][y];
+    }
 
 private:
     bool is_adjacent(int x1, int y1, int x2, int y2);
+    template <typename U>
+    friend class X_O_Game_Random_Player;
 };
 
 template <typename T>
@@ -31,64 +36,73 @@ public:
 template <typename T>
 class X_O_Game_Random_Player : public RandomPlayer<T> {
 public:
-    X_O_Game_Random_Player(T symbol);
+    X_O_Game_Random_Player(T symbol, X_O_Board<T>* boardPtr); // Constructor takes the board
     void getmove(int& x, int& y);
+
+private:
+    X_O_Board<T>* boardPtr;  // Pointer to the shared board
 };
+
 
 // Board constructor
 template <typename T>
 X_O_Board<T>::X_O_Board() {
-    this->rows = this->columns = 4;  // Set grid to 4x4
+    this->rows = this->columns = 4; // Set grid to 4x4
     this->board = new T*[this->rows];
     for (int i = 0; i < this->rows; i++) {
         this->board[i] = new T[this->columns];
         for (int j = 0; j < this->columns; j++) {
-            this->board[i][j] = 0;
+            this->board[i][j] = 0; // Initialize all cells to empty
         }
     }
+    // Initializing specific positions for tokens
     this->board[0][0] = 'O';
     this->board[0][1] = 'X';
-    this->board[3][2] = 'O';
-    this->board[3][3] = 'X';
+    this->board[0][2] = 'O';
+    this->board[0][3] = 'X';
+    this->board[3][0] = 'X';
+    this->board[3][1] = 'O';
+    this->board[3][2] = 'X';
+    this->board[3][3] = 'O';
     this->n_moves = 0;
 }
 
-// Update board with move
+// Update the board with a player's move
 template <typename T>
-bool X_O_Board<T>::update_board(int x, int y, T mark) {
+bool X_O_Board<T>::update_board(int x, int y, T symbol) {
     if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
         for (int i = 0; i < this->rows; i++) {
             for (int j = 0; j < this->columns; j++) {
-                if (this->board[i][j] == mark && is_adjacent(i, j, x, y)) {
-                    this->board[i][j] = 0;  // Remove the token from the old position
-                    this->board[x][y] = mark;  // Place the token in the new position
+                if (this->board[i][j] == symbol && is_adjacent(i, j, x, y)) {
+                    this->board[i][j] = 0;  // Clear the old position
+                    this->board[x][y] = symbol; // Place the token at the new position
                     this->n_moves++;
                     return true;
                 }
             }
         }
     }
+    cout << "Invalid move! Ensure the move is adjacent and the target cell is empty.\n";
     return false;
 }
 
-// Display board
+// Display the board
 template <typename T>
 void X_O_Board<T>::display_board() {
+    cout << "\nCurrent Board State:\n";
     for (int i = 0; i < this->rows; i++) {
-        cout << "\n| ";
         for (int j = 0; j < this->columns; j++) {
-            cout << "(" << i << "," << j << ")";
-            cout << setw(2) << this->board[i][j] << " |";
+            cout << "| " << (this->board[i][j] ? this->board[i][j] : ' ') << " ";
         }
-        cout << "\n---------------------------------";
+        cout << "|\n";
+        cout << string(this->columns * 4, '-') << "\n";
     }
-    cout << endl;
 }
 
-// Check if the move is to an adjacent position
+// Check if a move is to an adjacent position
 template <typename T>
 bool X_O_Board<T>::is_adjacent(int x1, int y1, int x2, int y2) {
-    return (abs(x1 - x2) + abs(y1 - y2)) == 1;
+    return (abs(x1 - x2) + abs(y1 - y2)) == 1; // Manhattan distance check
 }
 
 // Check win condition
@@ -98,6 +112,7 @@ bool X_O_Board<T>::is_win() {
         for (int j = 0; j < this->columns; j++) {
             T symbol = this->board[i][j];
             if (symbol != 0) {
+                // Horizontal, Vertical, Diagonal checks
                 if ((j <= this->columns - 3 && this->board[i][j + 1] == symbol && this->board[i][j + 2] == symbol) ||
                     (i <= this->rows - 3 && this->board[i + 1][j] == symbol && this->board[i + 2][j] == symbol) ||
                     (i <= this->rows - 3 && j <= this->columns - 3 && this->board[i + 1][j + 1] == symbol && this->board[i + 2][j + 2] == symbol) ||
@@ -114,7 +129,7 @@ bool X_O_Board<T>::is_win() {
 // Check draw condition
 template <typename T>
 bool X_O_Board<T>::is_draw() {
-    return (this->n_moves >= 16);
+    return this->n_moves >= 16; // All cells are filled
 }
 
 // Check if the game is over
@@ -130,19 +145,39 @@ X_O_Human_Player<T>::X_O_Human_Player(string name, T symbol) : Player<T>(name, s
 // Get move from human player
 template <typename T>
 void X_O_Human_Player<T>::getmove(int& x, int& y) {
-    cout << "Enter row and column for your move, " << this->name << " (" << this->symbol << "): ";
-    cin >> x >> y;
+    while (true) {
+        cout << "Enter row and column for your move, " << this->name
+             << " (" << this->symbol << ") [0-3 for both]: ";
+        cin >> x >> y;
+
+        // Validate input
+        if (cin.fail() || x < 0 || x >= 4 || y < 0 || y >= 4) {
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            cout << "Invalid move! Please enter values between 0 and 3.\n";
+        } else {
+            break; // Valid input
+        }
+    }
 }
 
 // Random computer player constructor
 template <typename T>
-X_O_Game_Random_Player<T>::X_O_Game_Random_Player(T symbol) : RandomPlayer<T>(symbol) {}
+X_O_Game_Random_Player<T>::X_O_Game_Random_Player(T symbol, X_O_Board<T>* boardPtr)
+    : RandomPlayer<T>(symbol), boardPtr(boardPtr) {}
 
 // Get move from random player
 template <typename T>
 void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
-    x = rand() % this->dimension;
-    y = rand() % this->dimension;
+    while (true) {
+        x = rand() % 4; 
+        y = rand() % 4;
+
+        // Check if the selected cell is empty
+        if (this->boardPtr->get_cell(x,y) == 0) {
+            break; // Valid move
+        }
+    }
 }
 
 #endif //_4X4_TICTACTOE_H
