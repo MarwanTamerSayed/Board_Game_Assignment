@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <cctype>
 using namespace std;
-
+int startX, startY;
 template <typename T>
 class X_O_Board : public Board<T> {
 public:
@@ -29,8 +29,11 @@ private:
 template <typename T>
 class X_O_Human_Player : public Player<T> {
 public:
-    X_O_Human_Player(string name, T symbol);
+    X_O_Human_Player(string name, T symbol,X_O_Board<T>* boardPtr);
     void getmove(int& x, int& y);
+
+private:
+    X_O_Board<T>* boardPtr;
 };
 
 template <typename T>
@@ -71,16 +74,15 @@ X_O_Board<T>::X_O_Board() {
 template <typename T>
 bool X_O_Board<T>::update_board(int x, int y, T symbol) {
     if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
-        for (int i = 0; i < this->rows; i++) {
-            for (int j = 0; j < this->columns; j++) {
-                if (this->board[i][j] == symbol && is_adjacent(i, j, x, y)) {
-                    this->board[i][j] = 0;  // Clear the old position
+            
+                if (this->board[startX][startY] == symbol && is_adjacent(startX, startY, x, y)) {
+                    this->board[startX][startY] = 0;  // Clear the old position
                     this->board[x][y] = symbol; // Place the token at the new position
                     this->n_moves++;
                     return true;
                 }
-            }
-        }
+
+
     }
     cout << "Invalid move! Ensure the move is adjacent and the target cell is empty.\n";
     return false;
@@ -140,24 +142,49 @@ bool X_O_Board<T>::game_is_over() {
 
 // Human player constructor
 template <typename T>
-X_O_Human_Player<T>::X_O_Human_Player(string name, T symbol) : Player<T>(name, symbol) {}
+X_O_Human_Player<T>::X_O_Human_Player(string name, T symbol, X_O_Board<T>* boardPtr) : Player<T>(name, symbol),boardPtr(boardPtr) {}
 
 // Get move from human player
 template <typename T>
 void X_O_Human_Player<T>::getmove(int& x, int& y) {
+
+     // Variables to store the starting position
+
+    // Step 1: Select the token to move
     while (true) {
-        cout << "Enter row and column for your move, " << this->name
+        cout << "Enter the position of the token you want to move, " << this->name
+             << " (" << this->symbol << ") [0-3 for both]: ";
+        cin >> startX >> startY;
+
+        // Validate input
+        if (cin.fail() || startX < 0 || startX >= 4 || startY < 0 || startY >= 4 ||
+            this->boardPtr->get_cell(startX, startY) != this->symbol) {
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            cout << "Invalid position! You must select your own token.\n";
+            } else {
+                break; // Valid input
+            }
+    }
+
+    // Step 2: Select the destination for the move
+    while (true) {
+        cout << "Enter the row and column for your move, " << this->name
              << " (" << this->symbol << ") [0-3 for both]: ";
         cin >> x >> y;
 
         // Validate input
-        if (cin.fail() || x < 0 || x >= 4 || y < 0 || y >= 4) {
+        if (cin.fail() || x < 0 || x >= 4 || y < 0 || y >= 4 ||
+            this->boardPtr->get_cell(x, y) != 0) {
             cin.clear(); // Clear the error flag
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
-            cout << "Invalid move! Please enter values between 0 and 3.\n";
-        } else {
-            break; // Valid input
-        }
+            cout << "Invalid move! Please select an empty position within bounds.\n";
+            } else if (abs(x - startX) > 1 || abs(y - startY) > 1) {
+                // Additional movement rule: restrict to adjacent cells
+                cout << "Invalid move! You can only move to an adjacent cell.\n";
+            } else {
+                break; // Valid destination
+            }
     }
 }
 
@@ -170,7 +197,7 @@ X_O_Game_Random_Player<T>::X_O_Game_Random_Player(T symbol, X_O_Board<T>* boardP
 template <typename T>
 void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
     while (true) {
-        x = rand() % 4; 
+        x = rand() % 4;
         y = rand() % 4;
 
         // Check if the selected cell is empty
