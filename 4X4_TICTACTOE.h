@@ -74,15 +74,12 @@ X_O_Board<T>::X_O_Board() {
 template <typename T>
 bool X_O_Board<T>::update_board(int x, int y, T symbol) {
     if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
-            
                 if (this->board[startX][startY] == symbol && is_adjacent(startX, startY, x, y)) {
                     this->board[startX][startY] = 0;  // Clear the old position
                     this->board[x][y] = symbol; // Place the token at the new position
                     this->n_moves++;
                     return true;
                 }
-
-
     }
     cout << "Invalid move! Ensure the move is adjacent and the target cell is empty.\n";
     return false;
@@ -199,9 +196,12 @@ void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
     while (true) {
         x = rand() % 4;
         y = rand() % 4;
+        startX = rand() % 4;
+        startY = rand() % 4;
 
         // Check if the selected cell is empty
-        if (this->boardPtr->get_cell(x,y) == 0) {
+        if (this->boardPtr->get_cell(x,y) == 0 &&
+            this->boardPtr->is_adjacent(startX, startY, x, y)) {
             break; // Valid move
         }
     }
