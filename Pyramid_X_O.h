@@ -81,14 +81,17 @@ void PyramidBoard<T>::display_board() {
         // Calculate the spaces to center each row
         int padding = (max_columns - row_sizes[i]) * 3;  // 3 spaces per missing cell
         cout << string(padding, ' ');  // Add padding before the row
-
+        cout << "|";
         // Loop through each column in the row
         for (int j = 0; j < row_sizes[i]; j++) {
             cout << "(" << i << "," << j << ")";
             cout << " " << this->board[i][j] << " ";
         }
+        cout << "|";
         cout << endl;  // Move to the next row
     }
+
+        cout << "=========================================" << endl ;
 }
 
 // Check for a winner

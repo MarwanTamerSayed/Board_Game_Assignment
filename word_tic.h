@@ -1,3 +1,9 @@
+
+#ifndef WORD_TIC_H
+#define WORD_TIC_H
+
+
+
 #include "BoardGame_Classes.h"
 #include <iostream>
 #include <fstream>
@@ -116,14 +122,24 @@ bool WordBoard<T>::is_win() {
         if (this->board[i][0] != 0 && isWordInFile(word)) {
             return true;
         }
+        word = string(1, this->board[i][2]) + this->board[i][1] + this->board[i][0];
+        if (this->board[i][2] != 0 && isWordInFile(word)) {
+            return true;
+        }
     }
 
     for (int i = 0; i < this->columns; i++) {
         string word;
+        string word2;
 
         // Check columns
         word = string(1, this->board[0][i]) + this->board[1][i] + this->board[2][i];
         if (this->board[0][i] != 0 && isWordInFile(word)) {
+            return true;
+        }
+        // Check columns
+        word2 = string(1, this->board[2][i]) + this->board[1][i] + this->board[0][i];
+        if (this->board[2][i] != 0 && isWordInFile(word2)) {
             return true;
         }
     }
@@ -133,9 +149,19 @@ bool WordBoard<T>::is_win() {
     if (this->board[0][0] != 0 && isWordInFile(diag1)) {
         return true;
     }
+    string diag2 = string(1, this->board[2][2]) + this->board[1][1] + this->board[0][0];
+    if (this->board[2][2] != 0 && isWordInFile(diag2)) {
+        return true;
+    }
 
-    string diag2 = string(1, this->board[0][2]) + this->board[1][1] + this->board[2][0];
-    if (this->board[0][2] != 0 && isWordInFile(diag2)) {
+
+
+    string diag3 = string(1, this->board[0][2]) + this->board[1][1] + this->board[2][0];
+    if (this->board[0][2] != 0 && isWordInFile(diag3)) {
+        return true;
+    }
+    string diag4 = string(1, this->board[2][0]) + this->board[1][1] + this->board[0][2];
+    if (this->board[0][2] != 0 && isWordInFile(diag4)) {
         return true;
     }
 
@@ -181,3 +207,6 @@ void Word_Random_Player<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
     y = rand() % this->dimension;
 }
+
+
+#endif // WORD_TIC_H

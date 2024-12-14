@@ -4,45 +4,57 @@
 using namespace std;
 
 int main() {
+    srand(time(nullptr));  
+    int choice;
     Player<char>* players[2];
     WordBoard<char>* board = new WordBoard<char>();
-    string playerName;
-    int choice;
+    string player1Name, player2Name;
 
-    cout << "Welcome to Word Tic-Tac-Toe!\n";
+    cout << "Welcome to Word Tic Tac Toe!\n";
 
-    // Setup Player 1
-    cout << "For Player 1, enter 1 for Human or 2 for Random Player: ";
+    // Set up Player 1
+    cout << "Enter Player 1 name: ";
+    cin >> player1Name;
+    cout << "Choose Player 1 type:\n";
+    cout << "1. Human\n";
+    cout << "2. Random Computer\n";
     cin >> choice;
-    if (choice == 1) {
-        cout << "Enter Player 1 name: ";
-        cin >> playerName;
-        players[0] = new WordPlayer<char>(playerName, ' '); // Symbol is dynamic based on input.
-    } else if (choice == 2) {
-        players[0] = new Word_Random_Player<char>(' '); // Random Player
-        cout << "Player 1 is a Random Computer Player!\n";
-    } else {
-        cout << "Invalid choice, defaulting Player 1 to Human Player.\n";
-        cout << "Enter Player 1 name: ";
-        cin >> playerName;
-        players[0] = new WordPlayer<char>(playerName, ' ');
+
+    switch (choice) {
+        case 1:
+            players[0] = new WordPlayer<char>(player1Name, ' ');
+            break;
+        case 2:
+            players[0] = new Word_Random_Player<char>(' ');
+            cout << player1Name << " is a Random Computer Player!\n";
+            break;
+        default:
+            cout << "Invalid choice for Player 1. Exiting the game.\n";
+            delete board;
+            return 1;
     }
 
-    // Setup Player 2
-    cout << "For Player 2, enter 1 for Human or 2 for Random Player: ";
+    // Set up Player 2
+    cout << "Enter Player 2 name: ";
+    cin >> player2Name;
+    cout << "Choose Player 2 type:\n";
+    cout << "1. Human\n";
+    cout << "2. Random Computer\n";
     cin >> choice;
-    if (choice == 1) {
-        cout << "Enter Player 2 name: ";
-        cin >> playerName;
-        players[1] = new WordPlayer<char>(playerName, ' '); // Symbol is dynamic based on input.
-    } else if (choice == 2) {
-        players[1] = new Word_Random_Player<char>(' '); // Random Player
-        cout << "Player 2 is a Random Computer Player!\n";
-    } else {
-        cout << "Invalid choice, defaulting Player 2 to Human Player.\n";
-        cout << "Enter Player 2 name: ";
-        cin >> playerName;
-        players[1] = new WordPlayer<char>(playerName, ' ');
+
+    switch (choice) {
+        case 1:
+            players[1] = new WordPlayer<char>(player2Name, ' ');
+            break;
+        case 2:
+            players[1] = new Word_Random_Player<char>(' ');
+            cout << player2Name << " is a Random Computer Player!\n";
+            break;
+        default:
+            cout << "Invalid choice for Player 2. Exiting the game.\n";
+            delete players[0];
+            delete board;
+            return 1;
     }
 
     // Start the game
@@ -56,24 +68,19 @@ int main() {
 
             cout << players[i]->getname() << "'s turn:\n";
 
-            // If it's a Random Player, automatically generate a move
             if (dynamic_cast<Word_Random_Player<char>*>(players[i])) {
                 cout << "Random Player is making a move...\n";
                 static_cast<Word_Random_Player<char>*>(players[i])->getmove(x, y);
                 symbol = 'A' + rand() % 26; // Random letter as symbol
-                // cout << "Random Player chose (" << x << ", " << y << ") with symbol " << symbol << endl;
             } else {
-                // Human player input
                 cout << "Enter the row and column (0-2) followed by a character: ";
                 cin >> x >> y >> symbol;
             }
 
-            // Validate and update the board
             while (!board->update_board(x, y, toupper(symbol))) {
                 if (dynamic_cast<Word_Random_Player<char>*>(players[i])) {
                     static_cast<Word_Random_Player<char>*>(players[i])->getmove(x, y);
                     symbol = 'A' + rand() % 26;
-                    // cout << "Random Player chose (" << x << ", " << y << ") with symbol " << symbol << endl;
                 } else {
                     cout << "Invalid move. Try again (row column character): ";
                     cin >> x >> y >> symbol;
@@ -82,7 +89,6 @@ int main() {
 
             board->display_board();
 
-            // Check if the game has ended
             if (board->is_win()) {
                 cout << players[i]->getname() << " wins by forming a valid word! Congratulations!\n";
                 delete board;
