@@ -1,10 +1,5 @@
-#ifndef _5X5_H
-#define _5X5_H
-
 #include "BoardGame_Classes.h"
-#include <iostream>
-#include <iomanip>
-#include <cctype>
+#include <bits/stdc++.h>
 using namespace std;
 
 template <typename T>
@@ -16,10 +11,10 @@ public:
     bool is_win();
     bool is_draw();
     bool game_is_over();
-
 private:
     int count_threes(T symbol);
 };
+
 template <typename T>
 class X_O_HumanPlayer : public Player<T> {
 public:
@@ -33,6 +28,8 @@ public:
     X_O_RandomPlayer(T symbol);
     void getmove(int& x, int& y) override;
 };
+
+//IMPLEMENTATION
 
 template <typename T>
 X_O_Board5X5<T>::X_O_Board5X5() {
@@ -73,7 +70,6 @@ void X_O_Board5X5<T>::display_board() {
 template <typename T>
 int X_O_Board5X5<T>::count_threes(T symbol) {
     int count = 0;
-
     // Check rows
     for (int i = 0; i < this->rows; i++) {
         for (int j = 0; j <= this->columns - 3; j++) {
@@ -82,7 +78,6 @@ int X_O_Board5X5<T>::count_threes(T symbol) {
             }
         }
     }
-
     // Check columns
     for (int j = 0; j < this->columns; j++) {
         for (int i = 0; i <= this->rows - 3; i++) {
@@ -91,8 +86,7 @@ int X_O_Board5X5<T>::count_threes(T symbol) {
             }
         }
     }
-
-    // Check diagonals (top-left to bottom-right)
+    // Check diagonals from left
     for (int i = 0; i <= this->rows - 3; i++) {
         for (int j = 0; j <= this->columns - 3; j++) {
             if (this->board[i][j] == symbol && this->board[i + 1][j + 1] == symbol && this->board[i + 2][j + 2] == symbol) {
@@ -100,8 +94,7 @@ int X_O_Board5X5<T>::count_threes(T symbol) {
             }
         }
     }
-
-    // Check diagonals (top-right to bottom-left)
+    // Check diagonals from right
     for (int i = 0; i <= this->rows - 3; i++) {
         for (int j = 2; j < this->columns; j++) {
             if (this->board[i][j] == symbol && this->board[i + 1][j - 1] == symbol && this->board[i + 2][j - 2] == symbol) {
@@ -109,7 +102,6 @@ int X_O_Board5X5<T>::count_threes(T symbol) {
             }
         }
     }
-
     return count;
 }
 
@@ -117,11 +109,9 @@ template <typename T>
 bool X_O_Board5X5<T>::is_win() {
     int x_score = count_threes('X');
     int o_score = count_threes('O');
-
     cout << "Scores:\n";
     cout << "Player X: " << x_score << " points\n";
     cout << "Player O: " << o_score << " points\n";
-
     if (x_score > o_score && this->n_moves == 24) {
         cout << "Player X wins!\n";
         return true;
@@ -139,9 +129,9 @@ bool X_O_Board5X5<T>::is_win() {
 
 template <typename T>
 bool X_O_Board5X5<T>::is_draw() {
-    int xscore = count_threes('X');
-    int oscore = count_threes('O');
-    return (oscore == xscore && this->n_moves == 24);
+    int X_Score = count_threes('X');
+    int O_Score = count_threes('O');
+    return (O_Score == X_Score && this->n_moves == 24);
 }
 
 template <typename T>
@@ -173,5 +163,3 @@ void X_O_RandomPlayer<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
     y = rand() % this->dimension;
 }
-
-#endif _5X5_H
