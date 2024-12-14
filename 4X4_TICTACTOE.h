@@ -81,7 +81,6 @@ bool X_O_Board<T>::update_board(int x, int y, T symbol) {
                     return true;
                 }
     }
-    cout << "Invalid move! Ensure the move is adjacent and the target cell is empty.\n";
     return false;
 }
 
