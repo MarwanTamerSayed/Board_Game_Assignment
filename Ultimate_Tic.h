@@ -101,9 +101,7 @@ bool Small_XO_Board<T>::update_board(int x, int y, T symbol)
     return false;
 }
 
-//! mlhaaaash lazma 
-//! mlhaaaash lazma 
-//! mlhaaaash lazma 
+
 template <typename T>
 void Small_XO_Board<T>::display_board()
 {
