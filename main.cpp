@@ -7,7 +7,6 @@
 #include <unordered_set>
 #include <utility>
 #include <cstdlib>
-#include "FourInARowMinimaxPlayer.h"
 #include <memory>
 #include <stdexcept>
 #include "4X4_TICTACTOE.h"
@@ -292,7 +291,7 @@ void setupAndrunPyramid_X_O() {
 void setupAndrun5X5() {
     int choice;
     Player<char> *players[2];
-    X_O_Board<char>* B = new X_O_Board<char>();
+    X_O_Board5X5<char>* B = new X_O_Board5X5<char>();
     string PlayerOneName, PlayerTwoName;
     cout << "Welcome to FCAI 5x5 Tic Tac Toe Game. :)\n";
     // Set up player 1
@@ -458,7 +457,7 @@ void setupAndrunwordTic() {
 void setupAndrunX_OMisere() {
     int choice1,choice2;
     Player<char>* players[2];
-    X_O_Board<char>* B = new X_O_Board<char>();
+    X_O_Board_misere<char>* B = new X_O_Board_misere<char>();
     string player1Name, player2Name;
 
     cout << "Welcome to FCAI X-O Game. :)\n";
@@ -481,10 +480,10 @@ void setupAndrunX_OMisere() {
     cin >> choice2;
     switch(choice1) {
         case 1:
-            players[0] = new X_O_Player<char>(player2Name, 'X');
+            players[0] = new X_O_Player_misere<char>(player2Name, 'X');
         break;
         case 2:
-            players[0] = new X_O_Random_Player<char>('X');
+            players[0] = new X_O_Random_Player_misere<char>('X');
         break;
         case 3:
             players[0] = new X_O_MinMax_Player<char>('X');
@@ -495,10 +494,10 @@ void setupAndrunX_OMisere() {
     }
     switch(choice2) {
         case 1:
-            players[1] = new X_O_Player<char>(player1Name, 'O');
+            players[1] = new X_O_Player_misere<char>(player1Name, 'O');
         break;
         case 2:
-            players[1] = new X_O_Random_Player<char>('O');
+            players[1] = new X_O_Random_Player_misere<char>('O');
         break;
         case 3:
             players[1] = new X_O_MinMax_Player<char>('O');
