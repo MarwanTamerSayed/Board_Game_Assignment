@@ -1,12 +1,9 @@
-#ifndef _4X4_TICTACTOE_H
-#define _4X4_TICTACTOE_H
-
 #include "BoardGame_Classes.h"
-#include <iostream>
-#include <iomanip>
-#include <cctype>
+#include <bits/stdc++.h>
 using namespace std;
+
 int startX, startY;
+
 template <typename T>
 class X_O_Board : public Board<T> {
 public:
@@ -19,7 +16,6 @@ public:
     T get_cell(int x, int y) const {
         return this->board[x][y];
     }
-
 private:
     bool is_adjacent(int x1, int y1, int x2, int y2);
     template <typename U>
@@ -31,7 +27,6 @@ class X_O_Human_Player : public Player<T> {
 public:
     X_O_Human_Player(string name, T symbol,X_O_Board<T>* boardPtr);
     void getmove(int& x, int& y);
-
 private:
     X_O_Board<T>* boardPtr;
 };
@@ -41,7 +36,6 @@ class X_O_Game_Random_Player : public RandomPlayer<T> {
 public:
     X_O_Game_Random_Player(T symbol, X_O_Board<T>* boardPtr); // Constructor takes the board
     void getmove(int& x, int& y);
-
 private:
     X_O_Board<T>* boardPtr;  // Pointer to the shared board
 };
@@ -143,15 +137,12 @@ X_O_Human_Player<T>::X_O_Human_Player(string name, T symbol, X_O_Board<T>* board
 // Get move from human player
 template <typename T>
 void X_O_Human_Player<T>::getmove(int& x, int& y) {
-
      // Variables to store the starting position
-
     // Step 1: Select the token to move
     while (true) {
         cout << "Enter the position of the token you want to move, " << this->name
              << " (" << this->symbol << ") [0-3 for both]: ";
         cin >> startX >> startY;
-
         // Validate input
         if (cin.fail() || startX < 0 || startX >= 4 || startY < 0 || startY >= 4 ||
             this->boardPtr->get_cell(startX, startY) != this->symbol) {
@@ -162,13 +153,11 @@ void X_O_Human_Player<T>::getmove(int& x, int& y) {
                 break; // Valid input
             }
     }
-
     // Step 2: Select the destination for the move
     while (true) {
         cout << "Enter the row and column for your move, " << this->name
              << " (" << this->symbol << ") [0-3 for both]: ";
         cin >> x >> y;
-
         // Validate input
         if (cin.fail() || x < 0 || x >= 4 || y < 0 || y >= 4 ||
             this->boardPtr->get_cell(x, y) != 0) {
@@ -197,7 +186,6 @@ void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
         y = rand() % 4;
         startX = rand() % 4;
         startY = rand() % 4;
-
         // Check if the selected cell is empty
         if (this->boardPtr->get_cell(x,y) == 0 &&
             this->boardPtr->is_adjacent(startX, startY, x, y)) {
@@ -205,5 +193,3 @@ void X_O_Game_Random_Player<T>::getmove(int& x, int& y) {
         }
     }
 }
-
-#endif //_4X4_TICTACTOE_H
