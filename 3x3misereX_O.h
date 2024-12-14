@@ -1,8 +1,6 @@
-
-#ifndef _3X3X_O_H
-#define _3X3X_O_H
-
 #include "BoardGame_Classes.h"
+#include <bits/stdc++.h>
+using namespace std;
 
 template <typename T>
 class X_O_Board_misere:public Board<T> {
@@ -13,7 +11,6 @@ public:
     bool is_win() ;
     bool is_draw();
     bool game_is_over();
-
 };
 
 template <typename T>
@@ -21,7 +18,6 @@ class X_O_Player_misere : public Player<T> {
 public:
     X_O_Player_misere (string name, T symbol);
     void getmove(int& x, int& y) ;
-
 };
 
 template <typename T>
@@ -31,17 +27,7 @@ public:
     void getmove(int &x, int &y) ;
 };
 
-
-
-
-
-//--------------------------------------- IMPLEMENTATION
-
-#include <iostream>
-#include <iomanip>
-#include <cctype>  // for toupper()
-
-using namespace std;
+//IMPLEMENTATION
 
 // Constructor for X_O_Board
 template <typename T>
@@ -99,13 +85,11 @@ bool X_O_Board_misere<T>::is_win() {
             return true;
         }
     }
-
     // Check diagonals
     if ((this->board[0][0] == this->board[1][1] && this->board[1][1] == this->board[2][2] && this->board[0][0] != 0) ||
         (this->board[0][2] == this->board[1][1] && this->board[1][1] == this->board[2][0] && this->board[0][2] != 0)) {
         return true;
     }
-
     return false;
 }
 
@@ -119,8 +103,6 @@ template <typename T>
 bool X_O_Board_misere<T>::game_is_over() {
     return is_win() || is_draw();
 }
-
-//--------------------------------------
 
 // Constructor for X_O_Player
 template <typename T>
@@ -145,12 +127,3 @@ void X_O_Random_Player_misere<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
     y = rand() % this->dimension;
 }
-
-
-
-
-
-
-
-#endif //_3X3X_O_H
-
