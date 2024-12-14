@@ -8,9 +8,9 @@
 using namespace std;
 
 template <typename T>
-class X_O_Board : public Board<T> {
+class X_O_Board5X5 : public Board<T> {
 public:
-    X_O_Board();
+    X_O_Board5X5();
     bool update_board(int x, int y, T symbol);
     void display_board();
     bool is_win();
@@ -35,7 +35,7 @@ public:
 };
 
 template <typename T>
-X_O_Board<T>::X_O_Board() {
+X_O_Board5X5<T>::X_O_Board5X5() {
     this->rows = this->columns = 5;
     this->board = new T*[this->rows];
     for (int i = 0; i < this->rows; i++) {
@@ -48,7 +48,7 @@ X_O_Board<T>::X_O_Board() {
 }
 
 template <typename T>
-bool X_O_Board<T>::update_board(int x, int y, T mark) {
+bool X_O_Board5X5<T>::update_board(int x, int y, T mark) {
     if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
         this->board[x][y] = mark;
         this->n_moves++;
@@ -58,7 +58,7 @@ bool X_O_Board<T>::update_board(int x, int y, T mark) {
 }
 
 template <typename T>
-void X_O_Board<T>::display_board() {
+void X_O_Board5X5<T>::display_board() {
     for (int i = 0; i < this->rows; i++) {
         cout << "\n| ";
         for (int j = 0; j < this->columns; j++) {
@@ -71,7 +71,7 @@ void X_O_Board<T>::display_board() {
 }
 
 template <typename T>
-int X_O_Board<T>::count_threes(T symbol) {
+int X_O_Board5X5<T>::count_threes(T symbol) {
     int count = 0;
 
     // Check rows
@@ -114,7 +114,7 @@ int X_O_Board<T>::count_threes(T symbol) {
 }
 
 template <typename T>
-bool X_O_Board<T>::is_win() {
+bool X_O_Board5X5<T>::is_win() {
     int x_score = count_threes('X');
     int o_score = count_threes('O');
 
@@ -138,14 +138,14 @@ bool X_O_Board<T>::is_win() {
 }
 
 template <typename T>
-bool X_O_Board<T>::is_draw() {
+bool X_O_Board5X5<T>::is_draw() {
     int xscore = count_threes('X');
     int oscore = count_threes('O');
     return (oscore == xscore && this->n_moves == 24);
 }
 
 template <typename T>
-bool X_O_Board<T>::game_is_over() {
+bool X_O_Board5X5<T>::game_is_over() {
     if (is_draw() || is_win()) {
         return true;
     }
