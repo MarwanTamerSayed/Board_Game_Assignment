@@ -7,10 +7,10 @@
 #include "BoardGame_Classes.h"
 #include <iostream>
 #include <fstream>
-#include <cstdlib>   // For rand(), srand()
-#include <ctime>     // For time()
+#include <cstdlib>   
+#include <ctime>
 #include <iomanip>
-#include <cctype>  // for toupper()
+#include <cctype>  
 
 using namespace std ;
 
