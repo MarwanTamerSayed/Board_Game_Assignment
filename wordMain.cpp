@@ -1,5 +1,5 @@
 #include <iostream>
-#include "word_tic.h" // Ensure this includes the WordBoard and player classes.
+#include "word_tic.h" 
 
 using namespace std;
 
