@@ -132,7 +132,7 @@ void setupAndRun3X3_SUS() {
 }
 
 void setupAndRunFourInARow() {
-    Board<char>* B = new FourInARowBoard<char>(); // Correct board type
+    FourInARowBoard<char>* B = new FourInARowBoard<char>(); // Correct board type
     Player<char>* players[2] = {nullptr, nullptr};
     string playerName;
     int choice;
@@ -141,16 +141,14 @@ void setupAndRunFourInARow() {
         // Setup Player 1
         cout << "Enter Player 1 name: ";
         cin >> playerName;
-        cout << "Choose Player 1 type:\n1. Human\n2. Random Computer\n3. Smart Computer (AI)\n";
+        cout << "Choose Player 1 type:\n1. Human\n2. Random Computer\n3.Smart Player\n";
         cin >> choice;
 
         if (choice == 1)
             players[0] = new FourInRowPlayer<char>(playerName, 'X');
         else if (choice == 2)
             players[0] = new FourInARowRandomPlayer<char>('X');
-        else if (choice == 3) {
-            players[0] = new FourInARowMinimaxPlayer<char>(playerName, 'X'); // Added player name, depth
-        }
+        else if (choice == 3) players[0] = new FourInARowHardAIPlayer<char>("Ai",'X',B);
         else
             throw std::invalid_argument("Invalid choice for Player 1.");
 
@@ -160,35 +158,19 @@ void setupAndRunFourInARow() {
         // Setup Player 2
         cout << "Enter Player 2 name: ";
         cin >> playerName;
-        cout << "Choose Player 2 type:\n1. Human\n2. Random Computer\n3. Smart Computer (AI)\n";
+        cout << "Choose Player 2 type:\n1. Human\n2. Random Computer\n3.Smart Player\n";
         cin >> choice;
 
         if (choice == 1)
             players[1] = new FourInRowPlayer<char>(playerName, 'O');
         else if (choice == 2)
             players[1] = new FourInARowRandomPlayer<char>('O');
-        else if (choice == 3) {
-            players[1] = new FourInARowMinimaxPlayer<char>(playerName, 'O'); // Added player name, depth
-        }
+        else if (choice == 3) players[1] = new FourInARowHardAIPlayer<char>("Ai",'O',B);
         else
             throw std::invalid_argument("Invalid choice for Player 2.");
 
         players[1]->setBoard(B);
         std::cout << "Board set for Player 2!" << std::endl;
-
-        // Additional type-specific setup (if needed)
-        auto minimax1 = dynamic_cast<FourInARowMinimaxPlayer<char>*>(players[0]);
-        if (minimax1) {
-            minimax1->set_board(dynamic_cast<FourInARowBoard<char>*>(B));
-            minimax1->reset_move_flag();
-        }
-
-        auto minimax2 = dynamic_cast<FourInARowMinimaxPlayer<char>*>(players[1]);
-        if (minimax2) {
-            minimax2->set_board(dynamic_cast<FourInARowBoard<char>*>(B));
-            minimax2->reset_move_flag();
-        }
-
         // Create and run the game
         GameManager<char> game(B, players);
         game.run();
@@ -205,65 +187,56 @@ void setupAndRunFourInARow() {
 }
 
 void setupAndRunNumericalTicTacToe() {
-    Board<int>* B = new NumericalBoard<int>();
-    Player<int>* players[2] = {nullptr, nullptr};
-    unordered_set<int> oddNumbers = {1, 3, 5, 7, 9};
-    unordered_set<int> evenNumbers = {2, 4, 6, 8};
-    unordered_set<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    resetGlobalState();
-    string playerName;
-    int choice;
+        Board<int>* B = new NumericalBoard<int>();
+        Player<int>* players[2] = {nullptr, nullptr};
+        unordered_set<int> oddNumbers = {1, 3, 5, 7, 9};
+        unordered_set<int> evenNumbers = {2, 4, 6, 8};
+        resetGlobalState();
+        string playerName;
+        int choice;
 
-    try {
-        // Setup Player 1
-        cout << "Enter Player 1 name: ";
-        cin >> playerName;
-        cout << "Choose Player 1 type:\n1. Human\n2. Random Computer\n3. Smart Computer (AI)\n";
-        cin >> choice;
+        try {
+            // Setup Player 1
+            cout << "Enter Player 1 name: ";
+            cin >> playerName;
+            cout << "Choose Player 1 type:\n1. Human\n2. Random Computer\n";
+            cin >> choice;
 
-        if (choice == 1)
-            players[0] = new HumanPlayer<int>(playerName, oddNumbers);
-        else if (choice == 2)
-            players[0] = new NumericalRandomPlayer<int>(oddNumbers);
-        else if (choice == 3) {
-            // players[0] = new NumericalSmartPlayer<int>("Ai",numbers);
+            if (choice == 1)
+                players[0] = new HumanPlayer<int>(playerName, oddNumbers);
+            else if (choice == 2)
+                players[0] = new NumericalRandomPlayer<int>(oddNumbers);
+            else
+                throw std::invalid_argument("Invalid choice for Player 1.");
+
+            // Setup Player 2
+            cout << "Enter Player 2 name: ";
+            cin >> playerName;
+            cout << "Choose Player 2 type:\n1. Human\n2. Random Computer\n";
+            cin >> choice;
+
+            if (choice == 1)
+                players[1] = new HumanPlayer<int>(playerName, evenNumbers);
+            else if (choice == 2)
+                players[1] = new NumericalRandomPlayer<int>(evenNumbers);
+            else
+                throw std::invalid_argument("Invalid choice for Player 2.");
+
+            // Create and run the game
+            GameManager<int> game(B, players);
+            game.run();
+
+        } catch (const exception& e) {
+            cerr << "Error: " << e.what() << endl;
         }
-        else
-            throw std::invalid_argument("Invalid choice for Player 1.");
 
-        // Setup Player 2
-        cout << "Enter Player 2 name: ";
-        cin >> playerName;
-        cout << "Choose Player 2 type:\n1. Human\n2. Random Computer\n3. Smart Computer (AI)\n";
-        cin >> choice;
-
-        if (choice == 1)
-            players[1] = new HumanPlayer<int>(playerName, evenNumbers);
-        else if (choice == 2)
-            players[1] = new NumericalRandomPlayer<int>(evenNumbers);
-        else if (choice == 3) {
-            auto* aiPlayer = new NumericalMinMaxPlayer<int>("Ai",2);
-            aiPlayer->setBoard(dynamic_cast<NumericalBoard<int>*>(B)); // Set the board pointer
-            players[1] = aiPlayer;
+        // Cleanup
+        delete B;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
         }
-
-        else
-            throw std::invalid_argument("Invalid choice for Player 2.");
-
-        // Create and run the game
-        GameManager<int> game(B, players);
-        game.run();
-
-    } catch (const exception& e) {
-        cerr << "Error: " << e.what() << endl;
     }
 
-    // Cleanup
-    delete B;
-    for (int i = 0; i < 2; ++i) {
-        delete players[i];
-    }
-}
 
 void setupandRun4x4TicTacToe() {
     char choice;
