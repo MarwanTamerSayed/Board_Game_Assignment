@@ -109,8 +109,30 @@ X_O_Player_misere<T>::X_O_Player_misere(string name, T symbol) : Player<T>(name,
 
 template <typename T>
 void X_O_Player_misere<T>::getmove(int& x, int& y) {
-    cout << "\nPlease enter your move x and y (0 to 2) separated by a space:";
-    cin >> x >> y;
+    while (true) {
+        cout << "\nPlease enter your index move row and column (0 to 2) separated by a space:";
+        string x1, y1;
+        cin >> x1 >> y1;
+        bool validInput = true;
+
+        if (x1 == "0" || x1 == "1" || x1 == "2") {
+            x = stoi(x1);
+        } else {
+            cout << "Invalid index move row!" << endl;
+            validInput = false;
+        }
+
+        if (y1 == "0" || y1 == "1" || y1 == "2") {
+            y = stoi(y1);
+        } else {
+            cout << "Invalid index move column!" << endl;
+            validInput = false;
+        }
+
+        if (validInput) {
+            break;
+        }
+    }
 }
 
 // Constructor for X_O_Random_Player
