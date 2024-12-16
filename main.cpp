@@ -34,7 +34,8 @@ int main() {
         cout << "6. XO Misere\n";
         cout << "7. 4X4 Tic Tac Toe\n";
         cout << "8. Ultimate Fun\n";
-        cout << "9. Exit\n";
+        cout << "9. 3X3 SUS game\n";
+        cout << "10. EXit\n";
         cin >> choice;
 
         switch (choice) {
