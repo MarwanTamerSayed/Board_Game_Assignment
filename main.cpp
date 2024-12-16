@@ -1,14 +1,7 @@
-#include <iostream>
-#include <string>
-#include <algorithm>
+#include <bits/stdc++.h>
 #include "BoardGame_Classes.h"
 #include "Four-in-a-row.h"
 #include "Numerical Tic-Tac-Toe.h"
-#include <unordered_set>
-#include <utility>
-#include <cstdlib>
-#include <memory>
-#include <stdexcept>
 #include "4X4_TICTACTOE.h"
 #include "Pyramid_X_O.h"
 #include "5X5.h"
@@ -16,11 +9,126 @@
 #include "3x3misereX_O.h"
 #include "MinMaxPlayermisere.h"
 #include "Ultimate_Tic.h"
-
-
-
-
+#include "3X3_SUS.h"
 using namespace std;
+
+void setupAndRun3X3_SUS();
+void setupAndRunFourInARow();
+void setupAndRunNumericalTicTacToe();
+void setupandRun4x4TicTacToe();
+void setupAndrunPyramid_X_O();
+void setupAndrun5X5();
+void setupAndrunwordTic();
+void setupAndrunX_OMisere();
+void setupAndrunUltimateX_O();
+
+int main() {
+    int choice;
+    do {
+        cout << "Select a game to play:\n";
+        cout << "1. Pyramid Fun\n";
+        cout << "2. Four in a Row\n";
+        cout << "3. 5X5 Tic Tac Toe\n";
+        cout << "4. Word Tic Tac Toe\n";
+        cout << "5. Numerical Tic Tac Toe\n";
+        cout << "6. XO Misere\n";
+        cout << "7. 4X4 Tic Tac Toe\n";
+        cout << "8. Ultimate Fun\n";
+        cout << "9. Exit\n";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                setupAndrunPyramid_X_O();
+            break;
+            case 2:
+                setupAndRunFourInARow();
+            break;
+            case 3:
+                setupAndrun5X5();
+            break;
+            case 4:
+                setupAndrunwordTic();
+            break;
+            case 5:
+                setupAndRunNumericalTicTacToe();
+            break;
+            case 6:
+                setupAndrunX_OMisere();
+            break;
+            case 7:
+                setupandRun4x4TicTacToe();
+            break;
+            case 8:
+                setupAndrunUltimateX_O();
+            break;
+            case 9:
+                setupAndRun3X3_SUS();
+            break;
+            case 10:
+                cout << "Exiting the program.\n";
+            break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 10);
+
+
+    return 0;
+}
+
+
+void setupAndRun3X3_SUS() {
+    int choice;
+    Player<char>* players[2] = {nullptr, nullptr};
+    SUS_Board<char>* B = new SUS_Board<char>();
+    string player1Name, player2Name;
+    cout << "Welcome to SUS Game!\n";
+    cout << "Enter Player 1 name: ";
+    cin >> player1Name;
+    cout << "Choose Player 1 type:\n";
+    cout << "1. Human\n";
+    cout << "2. Random Computer\n";
+    cin >> choice;
+    switch (choice) {
+        case 1:
+            players[0] = new SUS_Player<char>(player1Name, 'S',B);
+        break;
+        case 2:
+            players[0] = new SUS_Random_Player<char>('S');
+        break;
+        default:
+            cout << "Invalid choice for Player 1. Exiting the game.\n";
+        delete B;
+        return;
+    }
+    cout << "Enter Player 2 name: ";
+    cin >> player2Name;
+    cout << "Choose Player 2 type:\n";
+    cout << "1. Human\n";
+    cout << "2. Random Computer\n";
+    cin >> choice;
+    switch (choice) {
+        case 1:
+            players[1] = new SUS_Player<char>(player2Name, 'U',B);
+        break;
+        case 2:
+            players[1] = new SUS_Random_Player<char>('U');
+        break;
+        default:
+            std::cout << "Invalid choice for Player 2. Exiting the game.\n";
+        delete players[0]; // Cleanup for Player 1 if already created
+        delete B;
+        return;
+    }
+    // Run the game
+    GameManager<char> sus_game(B, players);
+    sus_game.run();
+    delete B;
+    for (int i = 0; i < 2; ++i) {
+        delete players[i];
+    }
+}
 
 void setupAndRunFourInARow() {
     Board<char>* B = new FourInARowBoard<char>(); // Correct board type
@@ -94,7 +202,6 @@ void setupAndRunFourInARow() {
         delete players[i];
     }
 }
-
 
 void setupAndRunNumericalTicTacToe() {
     Board<int>* B = new NumericalBoard<int>();
@@ -245,7 +352,7 @@ void setupAndrunPyramid_X_O() {
             players[0] = new X_O_Random_Player<char>('X');
         break;
         case 3:
-            players[0] = new X_O_MinMax_Player<char>('X');
+            players[0] = new X_O_MinMax_Player5X5<char>('X');
         players[0]->setBoard(B);
         break;
         default:
@@ -269,7 +376,7 @@ void setupAndrunPyramid_X_O() {
             players[1] = new X_O_Random_Player<char>('O');
         break;
         case 3:
-            players[1] = new X_O_MinMax_Player<char>('O');
+            players[1] = new X_O_MinMax_Player5X5<char>('O');
         players[1]->setBoard(B);
         break;
         default:
@@ -311,10 +418,10 @@ void setupAndrun5X5() {
             players[0] = new  X_O_RandomPlayer<char>('X');
             players[0]->setBoard(B);
             break;
-        // case 3:
-        //     players[0] = new X_O_MinMax_Player<char>('X');
-        //     players[0]->setBoard(B);
-        //     break;
+        case 3:
+            players[0] = new X_O_MinMax_Player5X5<char>('X');
+            players[0]->setBoard(B);
+            break;
         default:
             cout << "Invalid choice for Player one Exiting the game.\n";
     }
@@ -336,10 +443,10 @@ void setupAndrun5X5() {
             players[1] = new  X_O_RandomPlayer<char>('O');
             players[1]->setBoard(B);
             break;
-        // case 3:
-        //     players[1] = new X_O_MinMax_Player<char>('O');
-        //     players[1]->setBoard(B);
-        //     break;
+        case 3:
+            players[1] = new X_O_MinMax_Player5X5<char>('O');
+            players[1]->setBoard(B);
+            break;
         default:
             cout << "Invalid choice for Player two Exiting the game.\n";
 
@@ -355,6 +462,7 @@ void setupAndrun5X5() {
         delete players[i];
     }
 }
+
 void setupAndrunwordTic() {
     Player<char>* players[2];
     WordBoard<char>* board = new WordBoard<char>();
@@ -486,7 +594,7 @@ void setupAndrunX_OMisere() {
             players[0] = new X_O_Random_Player_misere<char>('X');
         break;
         case 3:
-            players[0] = new X_O_MinMax_Player<char>('X');
+            players[0] = new X_O_MinMax_Player5X5<char>('X');
         players[0]->setBoard(B);
         break;
         default:
@@ -500,7 +608,7 @@ void setupAndrunX_OMisere() {
             players[1] = new X_O_Random_Player_misere<char>('O');
         break;
         case 3:
-            players[1] = new X_O_MinMax_Player<char>('O');
+            players[1] = new X_O_MinMax_Player5X5<char>('O');
         players[1]->setBoard(B);
         break;
         default:
@@ -577,57 +685,3 @@ void setupAndrunUltimateX_O() {
     delete players[0];
     delete players[1];
 }
-int main() {
-    int choice;
-    do {
-        cout << "Select a game to play:\n";
-        cout << "1. Pyramid Fun\n";
-        cout << "2. Four in a Row\n";
-        cout << "3. 5X5 Tic Tac Toe\n";
-        cout << "4. Word Tic Tac Toe\n";
-        cout << "5. Numerical Tic Tac Toe\n";
-        cout << "6. XO Misere\n";
-        cout << "7. 4X4 Tic Tac Toe\n";
-        cout << "8. Ultimate Fun\n";
-        cout << "9. Exit\n";
-        cin >> choice;
-
-        switch (choice) {
-            case 1:
-                setupAndrunPyramid_X_O();
-            break;
-            case 2:
-                setupAndRunFourInARow();
-            break;
-            case 3:
-                setupAndrun5X5();
-            break;
-            case 4:
-                setupAndrunwordTic();
-            break;
-            case 5:
-                setupAndRunNumericalTicTacToe();
-            break;
-            case 6:
-                setupAndrunX_OMisere();
-            break;
-            case 7:
-                setupandRun4x4TicTacToe();
-            break;
-            case 8:
-                setupAndrunUltimateX_O();
-            break;
-            case 9:
-                cout << "Exiting the program.\n";
-            break;
-            default:
-                cout << "Invalid choice. Please try again.\n";
-        }
-    } while (choice != 9);
-
-
-    return 0;
-}
-
-
-
