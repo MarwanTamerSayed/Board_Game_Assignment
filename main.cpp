@@ -10,6 +10,9 @@
 #include "MinMaxPlayermisere.h"
 #include "Ultimate_Tic.h"
 #include "3X3_SUS.h"
+#include "PyramidMinMaxPlayer.h"
+#include "aiWord.h"
+
 using namespace std;
 
 void setupAndRun3X3_SUS();
@@ -26,7 +29,7 @@ int main() {
     int choice;
     do {
         cout << "Select a game to play:\n";
-        cout << "1. Pyramid Fun\n";
+        cout << "1. Pyramid Tic Tac Toe\n";
         cout << "2. Four in a Row\n";
         cout << "3. 5X5 Tic Tac Toe\n";
         cout << "4. Word Tic Tac Toe\n";
@@ -317,7 +320,7 @@ void setupAndrunPyramid_X_O() {
             players[0] = new X_O_Random_Player<char>('X');
         break;
         case 3:
-            players[0] = new X_O_MinMax_Player5X5<char>('X');
+            players[0] = new Pyramid_MinMax_Player<char>('X');
         players[0]->setBoard(B);
         break;
         default:
@@ -341,7 +344,7 @@ void setupAndrunPyramid_X_O() {
             players[1] = new X_O_Random_Player<char>('O');
         break;
         case 3:
-            players[1] = new X_O_MinMax_Player5X5<char>('O');
+            players[1] = new Pyramid_MinMax_Player<char>('O');
         players[1]->setBoard(B);
         break;
         default:
@@ -418,102 +421,89 @@ void setupAndrun5X5() {
 }
 
 void setupAndrunwordTic() {
-    Player<char>* players[2];
-    WordBoard<char>* board = new WordBoard<char>();
-    string playerName;
-    int choice;
+    srand(time(nullptr));
+     int choice;
+     Player<char>* players[2] = {nullptr, nullptr};
+     WordBoard<char>* board = new WordBoard<char>(); // Example size 5x5
+     string player1Name, player2Name;
 
-    cout << "Welcome to Word Tic-Tac-Toe!\n";
+     cout << "Welcome to Word Tic Tac Toe!\n";
 
-    // Setup Player 1
-    cout << "For Player 1, enter 1 for Human or 2 for Random Player: ";
-    cin >> choice;
-    if (choice == 1) {
-        cout << "Enter Player 1 name: ";
-        cin >> playerName;
-        players[0] = new WordPlayer<char>(playerName, ' '); // Symbol is dynamic based on input.
-    } else if (choice == 2) {
-        players[0] = new Word_Random_Player<char>(' '); // Random Player
-        cout << "Player 1 is a Random Computer Player!\n";
-    } else {
-        cout << "Invalid choice, defaulting Player 1 to Human Player.\n";
-        cout << "Enter Player 1 name: ";
-        cin >> playerName;
-        players[0] = new WordPlayer<char>(playerName, ' ');
-    }
+     try {
+         // Setup Player 1
+         cout << "Enter Player 1 name: ";
+         cin >> player1Name;
 
-    // Setup Player 2
-    cout << "For Player 2, enter 1 for Human or 2 for Random Player: ";
-    cin >> choice;
-    if (choice == 1) {
-        cout << "Enter Player 2 name: ";
-        cin >> playerName;
-        players[1] = new WordPlayer<char>(playerName, ' '); // Symbol is dynamic based on input.
-    } else if (choice == 2) {
-        players[1] = new Word_Random_Player<char>(' '); // Random Player
-        cout << "Player 2 is a Random Computer Player!\n";
-    } else {
-        cout << "Invalid choice, defaulting Player 2 to Human Player.\n";
-        cout << "Enter Player 2 name: ";
-        cin >> playerName;
-        players[1] = new WordPlayer<char>(playerName, ' ');
-    }
+         cout << "Choose Player 1 type:\n";
+         cout << "1. Human\n";
+         cout << "2. Random Computer\n";
+         cout << "3. AI Player\n";
+         cin >> choice;
 
-    // Start the game
-    cout << "Starting the game... Players will input characters to form valid words.\n";
-    board->display_board();
+         if (choice == 1) {
+             players[0] = new WordPlayer<char>(player1Name, ' ');
+         } else if (choice == 2) {
+             players[0] = new Word_Random_Player<char>(' ');
+             cout << player1Name << " is a Random Computer Player!\n";
+         } else if (choice == 3) {
 
-    while (!board->game_is_over()) {
-        for (int i = 0; i < 2; ++i) {
-            int x, y;
-            char symbol;
+             players[0] = new AIPlayer(player1Name, 'B', "dic.txt");
+             cout << player1Name << " is an AI Player!\n";
+         } else {
+             throw invalid_argument("Invalid choice for Player 1. Please enter 1, 2, or 3.");
+         }
 
-            cout << players[i]->getname() << "'s turn:\n";
+         // Setup Player 2
+         cout << "Enter Player 2 name: ";
+         cin >> player2Name;
 
-            // If it's a Random Player, automatically generate a move
-            if (dynamic_cast<Word_Random_Player<char>*>(players[i])) {
-                cout << "Random Player is making a move...\n";
-                static_cast<Word_Random_Player<char>*>(players[i])->getmove(x, y);
-                symbol = 'A' + rand() % 26; // Random letter as symbol
-                // cout << "Random Player chose (" << x << ", " << y << ") with symbol " << symbol << endl;
-            } else {
-                // Human player input
-                cout << "Enter the row and column (0-2) followed by a character: ";
-                cin >> x >> y >> symbol;
-            }
+         cout << "Choose Player 2 type:\n";
+         cout << "1. Human\n";
+         cout << "2. Random Computer\n";
+         cout << "3. AI Player\n";
+         cin >> choice;
 
-            // Validate and update the board
-            while (!board->update_board(x, y, toupper(symbol))) {
-                if (dynamic_cast<Word_Random_Player<char>*>(players[i])) {
-                    static_cast<Word_Random_Player<char>*>(players[i])->getmove(x, y);
-                    symbol = 'A' + rand() % 26;
-                    // cout << "Random Player chose (" << x << ", " << y << ") with symbol " << symbol << endl;
-                } else {
-                    cout << "Invalid move. Try again (row column character): ";
-                    cin >> x >> y >> symbol;
-                }
-            }
+         if (choice == 1) {
+             players[1] = new WordPlayer<char>(player2Name, ' ');
+         } else if (choice == 2) {
+             players[1] = new Word_Random_Player<char>(' ');
+             cout << player2Name << " is a Random Computer Player!\n";
+         } else if (choice == 3) {
 
-            board->display_board();
+             players[1] = new AIPlayer(player2Name, 'B', "dic.txt");
+             cout << player2Name << " is an AI Player!\n";
+         } else {
+             throw invalid_argument("Invalid choice for Player 2. Please enter 1, 2, or 3.");
+         }
 
-            // Check if the game has ended
-            if (board->is_win()) {
-                cout << players[i]->getname() << " wins by forming a valid word! Congratulations!\n";
-                delete board;
-                for (int j = 0; j < 2; ++j) delete players[j];
-            }
+         // Assign the board to both players
+         players[0]->setBoard(board);
+         players[1]->setBoard(board);
 
-            if (board->is_draw()) {
-                cout << "It's a draw! No valid words formed.\n";
-                delete board;
-                for (int j = 0; j < 2; ++j) delete players[j];
-            }
-        }
-    }
+         // Create the game manager
+         GameManager<char> gameManager(board, players);
 
-    // Clean up resources
-    delete board;
-    for (int i = 0; i < 2; ++i) delete players[i];
+         // Run the game
+         gameManager.run();
+
+     } catch (const invalid_argument& e) {
+         cerr << "Error: " << e.what() << endl;
+         delete board;
+         for (int i = 0; i < 2; ++i) {
+             delete players[i];
+         }
+     } catch (const runtime_error& e) {
+         cerr << "Error: " << e.what() << endl;
+         delete board;
+         for (int i = 0; i < 2; ++i) {
+             delete players[i];
+         }
+     }
+
+     // Cleanup
+     delete board;
+     delete players[0];
+     delete players[1];
 }
 
 void setupAndrunX_OMisere() {
@@ -547,10 +537,7 @@ void setupAndrunX_OMisere() {
         case 2:
             players[0] = new X_O_Random_Player_misere<char>('X');
         break;
-        case 3:
-            players[0] = new X_O_MinMax_Player5X5<char>('X');
-        players[0]->setBoard(B);
-        break;
+
         default:
             cout << "Invalid choice for Player X. Exiting the game.\n";
     }
@@ -561,9 +548,7 @@ void setupAndrunX_OMisere() {
         case 2:
             players[1] = new X_O_Random_Player_misere<char>('O');
         break;
-        case 3:
-            players[1] = new X_O_MinMax_Player5X5<char>('O');
-        players[1]->setBoard(B);
+
         break;
         default:
             cout << "Invalid choice for Player O. Exiting the game.\n";
