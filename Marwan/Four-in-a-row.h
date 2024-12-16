@@ -5,10 +5,12 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <cmath>
+#include <random>
 using namespace std;
 
 template <typename T>
-class FourInARowMinimaxPlayer; // Forward declaration
+class FourInARowHardAIPlayer; // Forward declaration
 template <typename T>
 class FourInARowBoard : public Board<T> {
 public:
@@ -52,7 +54,7 @@ public:
 
     // Override the getColumns function
     int getColumns() const {
-        return this->cols;  // Accessing the protected member of the base class
+        return this->columns;  // Accessing the protected member of the base class
     }
     void dec_n() {
         this->n_moves--;
@@ -154,7 +156,7 @@ public:
     bool game_is_over() override {
         return is_win() || is_draw();
     }
-    friend class FourInARowMinimaxPlayer<T>;
+    friend class FourInARowHardAIPlayer<T>;
 };
 
 template <typename T>
@@ -200,7 +202,77 @@ public:
 
 
 
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <string>
 
+template <typename T>
+class FourInARowHardAIPlayer : public Player<T> {
+private:
+    FourInARowBoard<T>* boardPtr;
+
+public:
+    // Constructor to initialize the player with a name and symbol
+    FourInARowHardAIPlayer(std::string name, T symbol, FourInARowBoard<T>* boardPtr)
+        : Player<T>(name, symbol), boardPtr(boardPtr) {}
+
+    // Get move from the AI (hard mode)
+    void getmove(int& x, int& y) override {
+        std::cout << this->getname() << " (" << this->getsymbol() << ") is thinking...\n";
+
+        // Determine the opponent's symbol
+        T opponentSymbol = (this->getsymbol() == 'X') ? 'O' : 'X';
+
+        // Step 1: Try to find a winning move for the AI
+        for (int col = 0; col < 7; col++) {
+            int row = this->boardPtr->get_first_empty_row(col);
+            if (row != -1) {
+                // Simulate the move for the AI
+                this->boardPtr->update_board(row, col, this->getsymbol());
+                if (this->boardPtr->is_win()) {
+                    // Found a winning move
+                    x = row;
+                    y = col;
+                    this->boardPtr->at(row, col) = '.'; // Undo move
+                    return;
+                }
+                // Undo the move
+                this->boardPtr->at(row, col) = '.';
+            }
+        }
+
+        // Step 2: Block opponent's winning move
+        for (int col = 0; col < 7; col++) {
+            int row = this->boardPtr->get_first_empty_row(col);
+            if (row != -1) {
+                // Simulate the opponent's move
+                this->boardPtr->update_board(row, col, opponentSymbol);
+                if (this->boardPtr->is_win()) {
+                    // Found a blocking move
+                    x = row;
+                    y = col;
+                    this->boardPtr->at(row, col) = '.'; // Undo move
+                    return;
+                }
+                // Undo the move
+                this->boardPtr->at(row, col) = '.';
+            }
+        }
+
+        // Step 3: If no winning or blocking moves, pick a random valid move
+        static bool seeded = false;
+        if (!seeded) {
+            srand(time(0)); // Seed the random number generator once
+            seeded = true;
+        }
+
+        do {
+            y = rand() % 7;  // Random column
+            x = this->boardPtr->get_first_empty_row(y);  // Get first empty row for that column
+        } while (x == -1);  // Ensure the column is not full
+    }
+};
 
 
 
