@@ -149,14 +149,14 @@ X_O_Player<T>::X_O_Player(string name, T symbol) : Player<T>(name, symbol) {}
 template <typename T>
 void X_O_Player<T>::getmove(int& x, int& y) {
     while (true) {
-        cout << "\nPlease enter your move (x and y) separated by spaces (0-2): ";
+        cout << "\nPlease enter your move (x and y) separated by spaces : ";
         cin >> x >> y;
 
         // Validate input
-        if (cin.fail() || x < 0 || x > 2 || y < 0 || y > 2) {
+        if (cin.fail()) {
             cin.clear(); // Clear the error flag on cin
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore invalid input
-            cout << "Invalid input. Indices must be integers between 0 and 2. Try again.\n";
+            cout << "Invalid input. Try again.\n";
         } else {
             break; // Input is valid, exit the loop
         }
@@ -184,11 +184,3 @@ void X_O_Random_Player<T>::getmove(int& x, int& y) {
 }
 
 // ======================================================
-
-// Revise the code again
-
-// some notes 
-// 1 ) if and endif 
-// 2 ) ai player doesn't work well
-// 3 ) make the UI good 
-// 4 ) the validation but not now
