@@ -141,7 +141,7 @@ bool X_O_Board5X5<T>::is_win()
     cout << "->Scores:\n";
     cout << "- Player X: " << X_score << " points\n";
     cout << "- Player O: " << O_score << " points\n";
-    if (X_score > O_score && this->n_moves == 24)
+    if (X_score > O_score && this->n_moves == 25 )
     {
         cout << "**Player X wins!**\n";
         return true;
