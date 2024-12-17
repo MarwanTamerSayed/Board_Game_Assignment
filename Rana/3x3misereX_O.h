@@ -26,7 +26,7 @@ template <typename T>
 class X_O_Random_Player_misere : public RandomPlayer<T>
 {
 public:
-    X_O_Random_Player_misere (T symbol);
+    X_O_Random_Player_misere (string N ,T symbol);
     void getmove(int &x, int &y) ;
 };
 
@@ -162,10 +162,11 @@ void X_O_Player_misere<T>::getmove(int& x, int& y)
 
 // Constructor for X_O_Random_Player_misere
 template <typename T>
-X_O_Random_Player_misere<T>::X_O_Random_Player_misere(T symbol) : RandomPlayer<T>(symbol)
+X_O_Random_Player_misere<T>::X_O_Random_Player_misere( string N,T symbol) : RandomPlayer<T>(symbol)
 {
+
     this->dimension = 3;
-    this->name = "Random Computer Player";
+    this->name = N;
     srand(static_cast<unsigned int>(time(0)));
 }
 
