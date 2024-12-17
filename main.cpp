@@ -535,7 +535,7 @@ void setupAndrunX_OMisere() {
             players[0] = new X_O_Player_misere<char>(player2Name, 'X');
         break;
         case 2:
-            players[0] = new X_O_Random_Player_misere<char>('X');
+            players[0] = new X_O_Random_Player_misere<char>(player2Name,'X');
         break;
 
         default:
@@ -546,7 +546,7 @@ void setupAndrunX_OMisere() {
             players[1] = new X_O_Player_misere<char>(player1Name, 'O');
         break;
         case 2:
-            players[1] = new X_O_Random_Player_misere<char>('O');
+            players[1] = new X_O_Random_Player_misere<char>(player1Name,'O');
         break;
 
         break;
