@@ -1,16 +1,5 @@
-#ifndef _SUS_GAME_H
-#define _SUS_GAME_H
-
 #include "BoardGame_Classes.h"
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-#include <cstdlib>
-#include <ctime>
-#include <cctype>
-#include <limits>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 template <typename T>
@@ -29,7 +18,8 @@ public:
     bool is_win() override;
     bool is_draw() override;
     bool game_is_over() override;
-    T getCell(int x, int y) const {
+    T getCell(int x, int y) const
+    {
         return this->board[x][y];
     }
 
@@ -49,10 +39,12 @@ template<typename T>
 int SUS_Board<T>::countP2 = 0;
 
 template <typename T>
-SUS_Board<T>::SUS_Board() {
+SUS_Board<T>::SUS_Board()
+{
     this->rows = this->columns = 3;
     this->board = new T*[this->rows];
-    for (int i = 0; i < this->rows; i++) {
+    for (int i = 0; i < this->rows; i++)
+    {
         this->board[i] = new T[this->columns]{};
     }
     this->currentplayersymbol = 'S';
@@ -60,21 +52,26 @@ SUS_Board<T>::SUS_Board() {
 }
 
 template <typename T>
-SUS_Board<T>::~SUS_Board() {
-    for (int i = 0; i < this->rows; i++) {
+SUS_Board<T>::~SUS_Board()
+{
+    for (int i = 0; i < this->rows; i++)
+    {
         delete[] this->board[i];
     }
     delete[] this->board;
 }
 
 template <typename T>
-void SUS_Board<T>::switchPlayer() {
+void SUS_Board<T>::switchPlayer()
+{
     currentplayersymbol = (currentplayersymbol == 'S') ? 'U' : 'S';
 }
 
 template <typename T>
-bool SUS_Board<T>::update_board(int x, int y, T mark) {
-    if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0) {
+bool SUS_Board<T>::update_board(int x, int y, T mark)
+{
+    if (x >= 0 && x < this->rows && y >= 0 && y < this->columns && this->board[x][y] == 0)
+    {
         this->board[x][y] = toupper(mark);
         this->n_moves++;
         return true;
@@ -83,10 +80,13 @@ bool SUS_Board<T>::update_board(int x, int y, T mark) {
 }
 
 template <typename T>
-void SUS_Board<T>::display_board() {
-    for (int i = 0; i < this->rows; i++) {
+void SUS_Board<T>::display_board()
+{
+    for (int i = 0; i < this->rows; i++)
+    {
         cout << "\n| ";
-        for (int j = 0; j < this->columns; j++) {
+        for (int j = 0; j < this->columns; j++)
+        {
             cout << (this->board[i][j] ? this->board[i][j] : '.') << " |";
         }
         cout << "\n" << string(this->columns * 4, '-');
@@ -96,37 +96,47 @@ void SUS_Board<T>::display_board() {
 
 // Helper function to check if positions have already been visited
 template <typename T>
-bool SUS_Board<T>::already_visited(vector<pair<int, int>> positions) {
-    return all_of(positions.begin(), positions.end(), [&](pair<int, int> pos) {
+bool SUS_Board<T>::already_visited(vector<pair<int, int>> positions)
+{
+    return all_of(positions.begin(), positions.end(), [&](pair<int, int> pos)
+    {
         return find(visited_cells.begin(), visited_cells.end(), pos) != visited_cells.end();
     });
 }
 
 // Add positions to visited list
 template <typename T>
-void SUS_Board<T>::add_visited(vector<pair<int, int>> positions) {
-    for (auto& pos : positions) {
+void SUS_Board<T>::add_visited(vector<pair<int, int>> positions)
+{
+    for (auto& pos : positions)
+    {
         visited_cells.push_back(pos);
     }
 }
 
 // Count all unique "S-U-S" sequences
 template <typename T>
-void SUS_Board<T>::count_SUS_S() {
+void SUS_Board<T>::count_SUS_S()
+{
     // Check rows and columns
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         // Rows
-        if (this->board[i][0] == 'S' && this->board[i][1] == 'U' && this->board[i][2] == 'S') {
+        if (this->board[i][0] == 'S' && this->board[i][1] == 'U' && this->board[i][2] == 'S')
+        {
             vector<pair<int, int>> positions = {{i, 0}, {i, 1}, {i, 2}};
-            if (!already_visited(positions)) {
+            if (!already_visited(positions))
+            {
                 add_visited(positions);
                 (currentplayersymbol == 'S') ? countP1++ : countP2++;
             }
         }
         // Columns
-        if (this->board[0][i] == 'S' && this->board[1][i] == 'U' && this->board[2][i] == 'S') {
+        if (this->board[0][i] == 'S' && this->board[1][i] == 'U' && this->board[2][i] == 'S')
+        {
             vector<pair<int, int>> positions = {{0, i}, {1, i}, {2, i}};
-            if (!already_visited(positions)) {
+            if (!already_visited(positions))
+            {
                 add_visited(positions);
                 (currentplayersymbol == 'S') ? countP1++ : countP2++;
             }
@@ -134,13 +144,15 @@ void SUS_Board<T>::count_SUS_S() {
     }
     // Check diagonals
     vector<pair<int, int>> diag1 = {{0, 0}, {1, 1}, {2, 2}};
-    if (this->board[0][0] == 'S' && this->board[1][1] == 'U' && this->board[2][2] == 'S' && !already_visited(diag1)) {
+    if (this->board[0][0] == 'S' && this->board[1][1] == 'U' && this->board[2][2] == 'S' && !already_visited(diag1))
+    {
         add_visited(diag1);
         (currentplayersymbol == 'S') ? countP1++ : countP2++;
     }
 
     vector<pair<int, int>> diag2 = {{0, 2}, {1, 1}, {2, 0}};
-    if (this->board[0][2] == 'S' && this->board[1][1] == 'U' && this->board[2][0] == 'S' && !already_visited(diag2)) {
+    if (this->board[0][2] == 'S' && this->board[1][1] == 'U' && this->board[2][0] == 'S' && !already_visited(diag2))
+    {
         add_visited(diag2);
         (currentplayersymbol == 'S') ? countP1++ : countP2++;
     }
@@ -159,17 +171,20 @@ bool SUS_Board<T>::is_win() {
 }
 
 template <typename T>
-bool SUS_Board<T>::is_draw() {
+bool SUS_Board<T>::is_draw()
+{
     return (this->n_moves == 9 && !is_win());
 }
 
 template <typename T>
-bool SUS_Board<T>::game_is_over() {
+bool SUS_Board<T>::game_is_over()
+{
     return is_win();
 }
 
 template <typename T>
-class SUS_Player : public Player<T> {
+class SUS_Player : public Player<T>
+{
 public:
     SUS_Player(string name, T symbol,SUS_Board<T>* boardPtr);
     void getmove(int& x, int& y) override;
@@ -228,13 +243,3 @@ void SUS_Random_Player<T>::getmove(int& x, int& y) {
     y = rand() % this->dimension;
 
 }
-
-#endif
-
-
-
-
-
-
-
-
