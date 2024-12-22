@@ -1,0 +1,79 @@
+#include "BoardGame_Classes.h"
+#include <bits/stdc++.h>
+using namespace std;
+
+template <typename T>
+class X_O_MinMax_Player : public Player<T> {
+public:
+    X_O_MinMax_Player(T symbol);
+    void getmove(int& x, int& y) override;
+
+private:
+    int calculateMinMax(T currentSymbol, bool isMaximizing);
+    pair<int, int> getBestMove();
+};
+
+template <typename T>
+X_O_MinMax_Player<T>::X_O_MinMax_Player(T symbol) : Player<T>(symbol) {
+    this->name = "AI Player ";
+}
+
+template <typename T>
+void X_O_MinMax_Player<T>::getmove(int& x, int& y) {
+    pair<int, int> bestMove = getBestMove();
+    x = bestMove.first;
+    y = bestMove.second;
+}
+
+template <typename T>
+int X_O_MinMax_Player<T>::calculateMinMax(T currentSymbol, bool isMaximizing) {
+    // Check for terminal states
+    if (this->boardPtr->is_win()) {
+        // Reverse logic: Win is bad, loss is good
+        return (isMaximizing ? -10 : 10);
+    }
+    if (this->boardPtr->is_draw()) {
+        return 0; // Draw is neutral
+    }
+
+    int bestValue = isMaximizing ? numeric_limits<int>::max() : numeric_limits<int>::min();
+    T opponentSymbol = (currentSymbol == 'X') ? 'O' : 'X';
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (this->boardPtr->update_board(i, j, currentSymbol)) { // Try move
+                int value = calculateMinMax(opponentSymbol, !isMaximizing);
+                this->boardPtr->update_board(i, j, T()); // Undo move (reset cell)
+
+                if (isMaximizing) {
+                    bestValue = min(bestValue, value); // Minimize value for AI
+                } else {
+                    bestValue = max(bestValue, value); // Maximize value for opponent
+                }
+            }
+        }
+    }
+
+    return bestValue;
+}
+
+template <typename T>
+pair<int, int> X_O_MinMax_Player<T>::getBestMove() {
+    int bestValue = numeric_limits<int>::max(); // Start with max, as we want the "worst" move
+    pair<int, int> bestMove = {-1, -1};
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (this->boardPtr->update_board(i, j, this->symbol)) { // Try move
+                int moveValue = calculateMinMax((this->symbol == 'X') ? 'O' : 'X', false);
+                this->boardPtr->update_board(i, j, T()); // Undo move (reset cell)
+
+                if (moveValue < bestValue) { // Minimize for AI
+                    bestMove = {i, j};
+                    bestValue = moveValue;
+                }
+            }
+        }
+    }
+    return bestMove;
+}
